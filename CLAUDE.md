@@ -1,4 +1,8 @@
-# CLAUDE.md - Plastic Browser Extension
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+# Plastic Browser Extension
 
 ## Project Overview
 
@@ -20,21 +24,38 @@ This is a Manifest V3 browser extension with the following key components:
 
 ### Extension Architecture
 - **Manifest V3**: Uses the latest extension manifest format
-- **Content Script Injection**: Runs on all websites (`*://*/*`)
+- **Programmatic Script Injection**: Uses chrome.scripting API (not declarative content scripts)
 - **Popup Interface**: Provides user controls for the overlay
 - **Storage API**: Persists overlay state across page reloads
-- **Message Passing**: Communication between popup and content script
+- **Message Passing**: Communication between popup and injected content script
 
 ## Key Components
 
+## Development Commands
+
+This is a browser extension project with no build system or package.json. Development is done directly with the source files.
+
+**Loading the Extension**:
+```bash
+# Open Chrome/Edge and navigate to chrome://extensions/
+# Enable "Developer mode" 
+# Click "Load unpacked" and select this directory
+```
+
+**Testing Changes**:
+- Make changes to source files
+- Click "Reload" button on extension card in chrome://extensions/
+- Test functionality on target websites
+
 ### 1. Manifest Configuration (`manifest.json`)
-- **Name**: "Pixel Art Helper"
+- **Name**: "Plastic" (not "Pixel Art Helper")
 - **Version**: 1.0
 - **Permissions**: 
   - `activeTab`: Access to current tab
   - `storage`: Persistent state storage
-- **Content Scripts**: Injected into all pages with CSS and JS
+  - `scripting`: For programmatic script injection
 - **Action**: Popup interface with default title and HTML
+- **No Content Scripts**: Uses programmatic injection via scripting API
 
 ### 2. Content Script (`content.js`)
 **Main Class**: `PixelArtOverlay`
@@ -92,9 +113,10 @@ currentState = {
 - Maintains image data, position, opacity, scale, and visibility across page reloads
 
 ### Cross-Site Compatibility
-- Designed to work on any website through universal content script injection
+- Designed to work on any website through programmatic script injection
 - High z-index (999999) ensures overlay appears above page content
 - Uses fixed positioning to maintain screen position regardless of page scrolling
+- Scripts are injected only when user activates the extension popup
 
 ## Usage Workflow
 
@@ -121,34 +143,32 @@ currentState = {
 
 ## Development Notes
 
-### Code Quality
-- Clean, well-structured ES6+ JavaScript
-- Consistent naming conventions and code organization
-- Proper event listener cleanup and memory management
-- Error handling for image loading failures
+### Key Implementation Details
+- **Script Injection**: Uses chrome.scripting API instead of declarative content scripts for better control
+- **State Persistence**: All overlay settings stored in chrome.storage.local for cross-session persistence
+- **Message Passing**: Popup communicates with injected content script via chrome.tabs.sendMessage
+- **No Build Process**: Direct source file development, no transpilation or bundling required
 
-### Extension Best Practices
-- Follows Manifest V3 standards
-- Uses modern Chrome Extension APIs
-- Implements proper message passing between components
-- Maintains separation of concerns between popup and content script
-
-### Future Enhancement Opportunities
-- Grid snap functionality for precise pixel alignment
-- Multiple overlay support
-- Keyboard shortcuts for common actions
-- Import/export overlay configurations
-- Enhanced image editing tools (rotation, cropping)
+### Extension Architecture Patterns
+- Popup serves as control interface and message sender
+- Content script handles all DOM manipulation and overlay logic
+- Storage API maintains state consistency between popup and content script
+- Fixed positioning ensures overlay remains visible during page scroll
 
 ## File Purposes Summary
 
 | File | Purpose | Key Functionality |
 |------|---------|------------------|
-| `manifest.json` | Extension config | Permissions, content script injection, popup definition |
+| `manifest.json` | Extension config | Permissions, scripting API access, popup definition |
 | `content.js` | Core overlay logic | Drag/drop, image display, state management, message handling |
 | `popup.html` | User interface | File upload, sliders, buttons for overlay control |
 | `popup.js` | Popup logic | UI event handling, message sending, state synchronization |
 | `styles.css` | Visual styling | Overlay appearance, drag handle styling, visual feedback |
 | `README.md` | Documentation | Installation guide, usage instructions, feature overview |
 
-This extension demonstrates solid understanding of browser extension architecture, DOM manipulation, and user experience design for creative tools.
+## Important Notes for Development
+
+- Extension uses programmatic script injection (chrome.scripting.executeScript) rather than declarative content scripts
+- No package.json or build system - all development is done directly on source files  
+- Testing requires manual reload of extension in chrome://extensions/ after changes
+- Content script is injected on-demand when popup is opened, not automatically on all pages
