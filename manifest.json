@@ -12,21 +12,4 @@
     "default_popup": "popup.html",
     "default_title": "Plastic"
   },
-  "content_scripts": [
-    {
-      "matches": [
-        "*://www.reddit.com/*",
-        "*://reddit.com/*", 
-        "*://place.reddit.com/*",
-        "*://wplace.live/*",
-        "*://*.pixilart.com/*",
-        "*://*.piskelapp.com/*",
-        "*://*.pixelartmaker.com/*",
-        "*://*.lospec.com/*",
-        "*://*.make8bitart.com/*"
-      ],
-      "js": ["content.js"],
-      "css": ["styles.css"]
-    }
-  ]
 }
