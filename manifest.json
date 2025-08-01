@@ -5,7 +5,8 @@
   "description": "Overlay reference images on pixel art websites like r/place",
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "scripting"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -13,7 +14,16 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*/*"],
+      "matches": [
+        "*://www.reddit.com/*",
+        "*://reddit.com/*", 
+        "*://place.reddit.com/*",
+        "*://*.pixilart.com/*",
+        "*://*.piskelapp.com/*",
+        "*://*.pixelartmaker.com/*",
+        "*://*.lospec.com/*",
+        "*://*.make8bitart.com/*"
+      ],
       "js": ["content.js"],
       "css": ["styles.css"]
     }

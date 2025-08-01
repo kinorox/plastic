@@ -86,7 +86,26 @@ document.addEventListener('DOMContentLoaded', function() {
   // Send message to content script
   function sendMessageToContent(message) {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, message);
+      chrome.tabs.sendMessage(tabs[0].id, message, function(response) {
+        // If no response, the content script might not be loaded
+        if (chrome.runtime.lastError) {
+          // Try to inject the content script for sites not in manifest
+          chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            files: ['content.js']
+          }, function() {
+            chrome.scripting.insertCSS({
+              target: { tabId: tabs[0].id },
+              files: ['styles.css']
+            }, function() {
+              // Retry sending the message
+              setTimeout(() => {
+                chrome.tabs.sendMessage(tabs[0].id, message);
+              }, 100);
+            });
+          });
+        }
+      });
     });
   }
 
