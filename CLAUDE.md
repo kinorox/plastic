@@ -1,8 +1,8 @@
-# CLAUDE.md - Pixel Art Helper Browser Extension
+# CLAUDE.md - Plastic Browser Extension
 
 ## Project Overview
 
-**Pixel Art Helper** is a browser extension designed to assist users in creating pixel art on websites like r/place by overlaying reference images with adjustable opacity and positioning. The extension provides a draggable, scalable overlay system that allows users to trace reference images while creating pixel art.
+**Plastic** is a browser extension designed to assist users in creating pixel art on websites like r/place by overlaying reference images with adjustable opacity and positioning. The extension provides a draggable, scalable overlay system that allows users to trace reference images while creating pixel art.
 
 ## Architecture
 

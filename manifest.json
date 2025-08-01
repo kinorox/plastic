@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Pixel Art Helper",
+  "name": "Plastic",
   "version": "1.0",
   "description": "Overlay reference images on pixel art websites like r/place",
   "permissions": [
@@ -9,7 +9,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Pixel Art Helper"
+    "default_title": "Plastic"
   },
   "content_scripts": [
     {

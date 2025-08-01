@@ -1,4 +1,4 @@
-# Pixel Art Helper Browser Extension
+# Plastic Browser Extension
 
 A browser extension that helps you create pixel art on websites like r/place by overlaying reference images with adjustable opacity and positioning.
 
@@ -16,12 +16,12 @@ A browser extension that helps you create pixel art on websites like r/place by 
 1. Open Chrome/Edge and navigate to `chrome://extensions/`
 2. Enable "Developer mode" in the top right
 3. Click "Load unpacked" and select this extension folder
-4. The Pixel Art Helper icon will appear in your extensions toolbar
+4. The Plastic icon will appear in your extensions toolbar
 
 ## Usage
 
 1. Navigate to a pixel art website (like r/place)
-2. Click the Pixel Art Helper extension icon
+2. Click the Plastic extension icon
 3. Upload a reference image using "Choose File"
 4. Adjust opacity and scale as needed
 5. The overlay will appear on the page with a drag handle
