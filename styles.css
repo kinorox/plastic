@@ -1,0 +1,21 @@
+#pixel-art-overlay {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#pixel-art-overlay img {
+  border: none;
+  border-radius: 0;
+}
+
+#pixel-art-handle {
+  min-width: 150px;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+#pixel-art-handle:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+

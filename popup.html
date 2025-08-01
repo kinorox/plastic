@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .section {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="file"] {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    .range-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .range-value {
+      min-width: 40px;
+      text-align: right;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 5px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+    }
+    .toggle-btn {
+      background: #2196F3;
+    }
+    .toggle-btn:hover {
+      background: #1976D2;
+    }
+    .remove-btn {
+      background: #f44336;
+    }
+    .remove-btn:hover {
+      background: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+  <div class="section">
+    <label for="imageInput">Upload Reference Image:</label>
+    <input type="file" id="imageInput" accept="image/*">
+  </div>
+
+  <div class="section">
+    <label>Opacity:</label>
+    <div class="range-container">
+      <input type="range" id="opacitySlider" min="0" max="100" value="50">
+      <span class="range-value" id="opacityValue">50%</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <label>Scale:</label>
+    <div class="range-container">
+      <input type="range" id="scaleSlider" min="10" max="200" value="100">
+      <span class="range-value" id="scaleValue">100%</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <button id="toggleOverlay" class="toggle-btn" disabled>Show Overlay</button>
+    <button id="removeOverlay" class="remove-btn" disabled>Remove Overlay</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

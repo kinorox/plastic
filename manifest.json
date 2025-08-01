@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Pixel Art Helper",
+  "version": "1.0",
+  "description": "Overlay reference images on pixel art websites like r/place",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Pixel Art Helper"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}
