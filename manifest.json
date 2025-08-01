@@ -18,6 +18,7 @@
         "*://www.reddit.com/*",
         "*://reddit.com/*", 
         "*://place.reddit.com/*",
+        "*://wplace.live/*",
         "*://*.pixilart.com/*",
         "*://*.piskelapp.com/*",
         "*://*.pixelartmaker.com/*",
