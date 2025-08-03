@@ -7,6 +7,9 @@ on:
   
   workflow_dispatch:  # Allows manual trigger
 
+permissions:
+  contents: write  # Required for creating releases
+  
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -53,28 +56,28 @@ jobs:
       
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: Plastic v${{ github.ref_name }}
           body: |
-            ## 🎨 Plastic v${{ github.ref_name }} - Enhanced Pixelization
+            ## Plastic v${{ github.ref_name }} - Enhanced Pixelization
             
-            ### ✨ New Features
-            - **Unlimited scaling** up to 1000% for detailed pixel art work
-            - **Fine pixelization** down to 1px for precision control
-            - **Configuration sharing** system for r/place team coordination
-            - **Drag anywhere** on overlay (not just handle)
-            - **Dynamic pixel grid** overlay for perfect alignment
+            ### New Features
+            - Unlimited scaling up to 1000% for detailed pixel art work
+            - Fine pixelization down to 1px for precision control
+            - Configuration sharing system for r/place team coordination
+            - Drag anywhere on overlay (not just handle)
+            - Dynamic pixel grid overlay for perfect alignment
             
-            ### 🎯 Perfect for r/place & wplace
+            ### Perfect for r/place & wplace
             - Share overlay configs with teammates via copy/paste codes
             - Coordinate large pixel art projects with identical setups
             - Enhanced pixelization for better reference matching
             
-            ### 📦 Installation
-            - **Chrome Web Store**: [Install Here](https://chrome.google.com/webstore/detail/jmgohdfjidehbaggidpjikmccilopgpk)
-            - **Manual Install**: Download `plastic-extension.zip` from this release
-            
-            🤖 Generated with automated CI/CD pipeline
+            ### Installation
+            - Chrome Web Store: https://chrome.google.com/webstore/detail/jmgohdfjidehbaggidpjikmccilopgpk
+            - Manual Install: Download plastic-extension.zip from this release
           files: plastic-extension.zip
           draft: false
           prerelease: false
