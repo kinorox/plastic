@@ -1,0 +1,79 @@
+name: Publish Chrome Extension
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v1.0.0
+  
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Update manifest version
+        run: |
+          # Extract version from git tag (remove 'v' prefix)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Version: $VERSION"
+          
+          # Update manifest.json version
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" manifest.json
+          
+          # Verify version update
+          grep "version" manifest.json
+      
+      - name: Create extension zip
+        run: |
+          zip -r plastic-extension.zip \
+            manifest.json \
+            popup.html \
+            popup.js \
+            content.js \
+            styles.css \
+            README.md \
+            -x "*.git*" "node_modules/*" ".github/*"
+          
+          # Verify zip contents
+          unzip -l plastic-extension.zip
+      
+      - name: Upload to Chrome Web Store
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          file-path: plastic-extension.zip
+          extension-id: jmgohdfjidehbaggidpjikmccilopgpk
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          publish: false  # Set to true for auto-publish after upload
+      
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Plastic v${{ github.ref }}
+          body: |
+            ## Changes in this version
+            - Automatic release from GitHub Actions
+            - Extension uploaded to Chrome Web Store
+            
+            ## Installation
+            Install from [Chrome Web Store](#) or load unpacked from this repository.
+          draft: false
+          prerelease: false
+      
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./plastic-extension.zip
+          asset_name: plastic-extension.zip
+          asset_content_type: application/zip

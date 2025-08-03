@@ -62,6 +62,18 @@
     .remove-btn:hover {
       background: #d32f2f;
     }
+    .share-btn {
+      background: #FF9800;
+    }
+    .share-btn:hover {
+      background: #F57C00;
+    }
+    .load-btn {
+      background: #4CAF50;
+    }
+    .load-btn:hover {
+      background: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -81,14 +93,39 @@
   <div class="section">
     <label>Scale:</label>
     <div class="range-container">
-      <input type="range" id="scaleSlider" min="10" max="200" value="100">
+      <input type="range" id="scaleSlider" min="10" max="1000" value="100">
       <span class="range-value" id="scaleValue">100%</span>
     </div>
   </div>
 
   <div class="section">
+    <label>Pixel Size:</label>
+    <div class="range-container">
+      <input type="range" id="pixelSizeSlider" min="1" max="128" value="16">
+      <span class="range-value" id="pixelSizeValue">16px</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <label style="display: flex; align-items: center; margin-bottom: 10px;">
+      <input type="checkbox" id="pixelizeToggle" style="margin-right: 8px; width: auto;">
+      Enable Pixelization
+    </label>
+    <label style="display: flex; align-items: center; margin-bottom: 10px;">
+      <input type="checkbox" id="gridToggle" style="margin-right: 8px; width: auto;">
+      Show Grid
+    </label>
+  </div>
+
+  <div class="section">
     <button id="toggleOverlay" class="toggle-btn" disabled>Show Overlay</button>
     <button id="removeOverlay" class="remove-btn" disabled>Remove Overlay</button>
+  </div>
+
+  <div class="section">
+    <label>Share Configuration:</label>
+    <button id="shareConfig" class="share-btn" disabled>Copy Share Code</button>
+    <button id="loadConfig" class="load-btn">Load Share Code</button>
   </div>
 
   <script src="popup.js"></script>

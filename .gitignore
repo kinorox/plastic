@@ -22,3 +22,9 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Google API Credentials - NEVER COMMIT THESE!
+*.json
+client_secret*.json
+credentials.json
+google-credentials.json
