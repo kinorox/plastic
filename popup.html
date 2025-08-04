@@ -86,7 +86,8 @@
     <label>Opacity:</label>
     <div class="range-container">
       <input type="range" id="opacitySlider" min="0" max="100" value="50">
-      <span class="range-value" id="opacityValue">50%</span>
+      <input type="number" id="opacityInput" min="0" max="100" value="50" style="width: 50px; margin-left: 8px; text-align: center;">
+      <span style="margin-left: 4px;">%</span>
     </div>
   </div>
 
@@ -94,7 +95,8 @@
     <label>Scale:</label>
     <div class="range-container">
       <input type="range" id="scaleSlider" min="10" max="1000" value="100">
-      <span class="range-value" id="scaleValue">100%</span>
+      <input type="number" id="scaleInput" min="10" max="1000" value="100" style="width: 60px; margin-left: 8px; text-align: center;">
+      <span style="margin-left: 4px;">%</span>
     </div>
   </div>
 
@@ -102,7 +104,8 @@
     <label>Pixel Size:</label>
     <div class="range-container">
       <input type="range" id="pixelSizeSlider" min="1" max="128" value="16">
-      <span class="range-value" id="pixelSizeValue">16px</span>
+      <input type="number" id="pixelSizeInput" min="1" max="128" value="16" style="width: 50px; margin-left: 8px; text-align: center;">
+      <span style="margin-left: 4px;">px</span>
     </div>
     <button id="autoMatchPixelSize" style="font-size: 11px; padding: 5px 8px; margin-top: 5px; background: #9C27B0;">Auto-Match Site</button>
   </div>

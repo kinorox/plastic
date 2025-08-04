@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
   const imageInput = document.getElementById('imageInput');
   const opacitySlider = document.getElementById('opacitySlider');
-  const opacityValue = document.getElementById('opacityValue');
+  const opacityInput = document.getElementById('opacityInput');
   const scaleSlider = document.getElementById('scaleSlider');
-  const scaleValue = document.getElementById('scaleValue');
+  const scaleInput = document.getElementById('scaleInput');
   const pixelSizeSlider = document.getElementById('pixelSizeSlider');
-  const pixelSizeValue = document.getElementById('pixelSizeValue');
+  const pixelSizeInput = document.getElementById('pixelSizeInput');
   const pixelizeToggle = document.getElementById('pixelizeToggle');
   const gridToggle = document.getElementById('gridToggle');
   const customPaletteToggle = document.getElementById('customPaletteToggle');
@@ -27,7 +27,22 @@ document.addEventListener('DOMContentLoaded', function() {
   // Update opacity display
   opacitySlider.addEventListener('input', function() {
     const value = this.value;
-    opacityValue.textContent = value + '%';
+    opacityInput.value = value;
+    if (hasImage) {
+      sendMessageToContent({
+        action: 'updateOpacity',
+        opacity: value / 100
+      });
+    }
+  });
+
+  // Update opacity from input
+  opacityInput.addEventListener('input', function() {
+    let value = parseInt(this.value);
+    if (isNaN(value)) value = 50;
+    value = Math.max(0, Math.min(100, value)); // Clamp between 0-100
+    this.value = value;
+    opacitySlider.value = value;
     if (hasImage) {
       sendMessageToContent({
         action: 'updateOpacity',
@@ -39,7 +54,22 @@ document.addEventListener('DOMContentLoaded', function() {
   // Update scale display
   scaleSlider.addEventListener('input', function() {
     const value = this.value;
-    scaleValue.textContent = value + '%';
+    scaleInput.value = value;
+    if (hasImage) {
+      sendMessageToContent({
+        action: 'updateScale',
+        scale: value / 100
+      });
+    }
+  });
+
+  // Update scale from input
+  scaleInput.addEventListener('input', function() {
+    let value = parseInt(this.value);
+    if (isNaN(value)) value = 100;
+    value = Math.max(10, Math.min(1000, value)); // Clamp between 10-1000
+    this.value = value;
+    scaleSlider.value = value;
     if (hasImage) {
       sendMessageToContent({
         action: 'updateScale',
@@ -51,7 +81,19 @@ document.addEventListener('DOMContentLoaded', function() {
   // Update pixel size display
   pixelSizeSlider.addEventListener('input', function() {
     const value = this.value;
-    pixelSizeValue.textContent = value + 'px';
+    pixelSizeInput.value = value;
+    if (hasImage && pixelizeToggle.checked) {
+      updateImageWithPixelization();
+    }
+  });
+
+  // Update pixel size from input
+  pixelSizeInput.addEventListener('input', function() {
+    let value = parseInt(this.value);
+    if (isNaN(value)) value = 16;
+    value = Math.max(1, Math.min(128, value)); // Clamp between 1-128
+    this.value = value;
+    pixelSizeSlider.value = value;
     if (hasImage && pixelizeToggle.checked) {
       updateImageWithPixelization();
     }
@@ -184,11 +226,11 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Update UI controls
       opacitySlider.value = config.opacity || 50;
-      opacityValue.textContent = Math.round(config.opacity || 50) + '%';
+      opacityInput.value = Math.round(config.opacity || 50);
       scaleSlider.value = config.scale || 100;
-      scaleValue.textContent = Math.round(config.scale || 100) + '%';
+      scaleInput.value = Math.round(config.scale || 100);
       pixelSizeSlider.value = config.pixelSize || 16;
-      pixelSizeValue.textContent = (config.pixelSize || 16) + 'px';
+      pixelSizeInput.value = config.pixelSize || 16;
       pixelizeToggle.checked = config.pixelizeEnabled || false;
       gridToggle.checked = config.gridEnabled || false;
       customPaletteToggle.checked = config.customPaletteEnabled || false;
@@ -259,9 +301,9 @@ document.addEventListener('DOMContentLoaded', function() {
       action: 'detectPixelSize'
     }, function(response) {
       if (response && response.pixelSize) {
-        // Update the pixel size slider
+        // Update both the pixel size slider and input
         pixelSizeSlider.value = response.pixelSize;
-        pixelSizeValue.textContent = response.pixelSize + 'px';
+        pixelSizeInput.value = response.pixelSize;
         
         // Update the image if pixelization is enabled
         if (hasImage && pixelizeToggle.checked) {
@@ -479,14 +521,14 @@ document.addEventListener('DOMContentLoaded', function() {
         shareButton.disabled = false;
         toggleButton.textContent = overlayVisible ? 'Hide Overlay' : 'Show Overlay';
         opacitySlider.value = state.opacity * 100;
-        opacityValue.textContent = Math.round(state.opacity * 100) + '%';
+        opacityInput.value = Math.round(state.opacity * 100);
         scaleSlider.value = state.scale * 100;
-        scaleValue.textContent = Math.round(state.scale * 100) + '%';
+        scaleInput.value = Math.round(state.scale * 100);
         
         // Load pixelization settings
         if (state.pixelSize) {
           pixelSizeSlider.value = state.pixelSize;
-          pixelSizeValue.textContent = state.pixelSize + 'px';
+          pixelSizeInput.value = state.pixelSize;
         }
         if (state.pixelizeEnabled) {
           pixelizeToggle.checked = state.pixelizeEnabled;

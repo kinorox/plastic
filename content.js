@@ -46,10 +46,10 @@ class PixelArtOverlay {
       box-shadow: none;
     `;
 
-    // Create draggable handle
-    const handle = document.createElement('div');
-    handle.id = 'pixel-art-handle';
-    handle.style.cssText = `
+    // Create top draggable handle
+    const topHandle = document.createElement('div');
+    topHandle.id = 'pixel-art-handle-top';
+    topHandle.style.cssText = `
       position: absolute;
       top: -20px;
       left: 0;
@@ -66,7 +66,29 @@ class PixelArtOverlay {
       font-family: Arial, sans-serif;
       border-radius: 3px 3px 0 0;
     `;
-    handle.textContent = '⋮⋮ Drag to move ⋮⋮';
+    topHandle.textContent = '⋮⋮ Drag to move ⋮⋮';
+
+    // Create bottom draggable handle
+    const bottomHandle = document.createElement('div');
+    bottomHandle.id = 'pixel-art-handle-bottom';
+    bottomHandle.style.cssText = `
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      cursor: move;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-family: Arial, sans-serif;
+      border-radius: 0 0 3px 3px;
+    `;
+    bottomHandle.textContent = '⋮⋮ Drag to move ⋮⋮';
 
 
     // Create image element
@@ -90,14 +112,20 @@ class PixelArtOverlay {
       z-index: 1;
     `;
 
+    // Store handle references for positioning updates
+    this.topHandle = topHandle;
+    this.bottomHandle = bottomHandle;
+
     // Assemble overlay
-    this.overlay.appendChild(handle);
+    this.overlay.appendChild(topHandle);
     this.overlay.appendChild(this.overlayImage);
     this.overlay.appendChild(this.gridOverlay);
+    this.overlay.appendChild(bottomHandle);
     document.body.appendChild(this.overlay);
 
-    // Setup drag functionality
-    this.setupDragHandlers(handle);
+    // Setup drag functionality for both handles
+    this.setupDragHandlers(topHandle);
+    this.setupDragHandlers(bottomHandle);
   }
 
   setupDragHandlers(element) {
@@ -133,11 +161,11 @@ class PixelArtOverlay {
   handleMouseUp = () => {
     this.isDragging = false;
     
-    // Reset cursor and pointer events
-    const handle = document.getElementById('pixel-art-handle');
-    if (handle) {
-      handle.style.cursor = 'move';
-    }
+    // Reset cursor for both handles
+    const topHandle = document.getElementById('pixel-art-handle-top');
+    const bottomHandle = document.getElementById('pixel-art-handle-bottom');
+    if (topHandle) topHandle.style.cursor = 'move';
+    if (bottomHandle) bottomHandle.style.cursor = 'move';
     
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);
@@ -213,7 +241,7 @@ class PixelArtOverlay {
 
   updateScale(scale) {
     this.currentState.scale = scale;
-    this.updateDisplay();
+    this.updateDisplay(); // This will call updateHandlePositions()
     this.updateGrid(this.currentState.gridEnabled, this.currentState.pixelSize);
     this.saveState();
   }
@@ -280,6 +308,21 @@ class PixelArtOverlay {
     this.overlayImage.style.opacity = this.currentState.opacity;
     this.overlayImage.style.transform = `scale(${this.currentState.scale})`;
     this.overlayImage.style.transformOrigin = 'top left';
+    
+    // Update handle positions based on scaled image
+    this.updateHandlePositions();
+  }
+  
+  updateHandlePositions() {
+    if (!this.overlayImage.naturalWidth || !this.overlayImage.naturalHeight) {
+      return; // Image not loaded yet
+    }
+    
+    const scaledHeight = this.overlayImage.naturalHeight * this.currentState.scale;
+    
+    // Position bottom handle based on scaled image height
+    this.bottomHandle.style.top = scaledHeight + 'px';
+    this.bottomHandle.style.bottom = 'auto'; // Override the CSS bottom positioning
   }
   
 
@@ -341,7 +384,7 @@ class PixelArtOverlay {
         if (this.currentState.hasImage && this.currentState.imageData) {
           this.overlayImage.src = this.currentState.imageData;
           this.overlayImage.onload = () => {
-            this.updateDisplay();
+            this.updateDisplay(); // This will call updateHandlePositions()
             this.updateGrid(this.currentState.gridEnabled, this.currentState.pixelSize);
             this.overlay.style.left = this.currentState.position.x + 'px';
             this.overlay.style.top = this.currentState.position.y + 'px';
