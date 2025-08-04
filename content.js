@@ -15,7 +15,9 @@ class PixelArtOverlay {
       hasImage: false,
       pixelSize: 16,
       pixelizeEnabled: false,
-      gridEnabled: false
+      gridEnabled: false,
+      customPaletteEnabled: false,
+      customPalette: ''
     };
     
     this.init();
@@ -94,9 +96,8 @@ class PixelArtOverlay {
     this.overlay.appendChild(this.gridOverlay);
     document.body.appendChild(this.overlay);
 
-    // Setup drag functionality on handle and image
+    // Setup drag functionality
     this.setupDragHandlers(handle);
-    this.setupDragHandlers(this.overlayImage);
   }
 
   setupDragHandlers(element) {
@@ -133,8 +134,10 @@ class PixelArtOverlay {
     this.isDragging = false;
     
     // Reset cursor and pointer events
-    this.overlayImage.style.cursor = 'default';
-    this.overlayImage.style.pointerEvents = 'none';
+    const handle = document.getElementById('pixel-art-handle');
+    if (handle) {
+      handle.style.cursor = 'move';
+    }
     
     document.removeEventListener('mousemove', this.handleMouseMove);
     document.removeEventListener('mouseup', this.handleMouseUp);
@@ -146,7 +149,7 @@ class PixelArtOverlay {
       console.log('Content script received message:', message.action);
       switch (message.action) {
         case 'setImage':
-          this.setImage(message.imageData, message.opacity, message.scale, message.pixelSize, message.showGrid, message.originalImageData);
+          this.setImage(message.imageData, message.opacity, message.scale, message.pixelSize, message.showGrid, message.originalImageData, message.customPaletteEnabled, message.customPalette);
           break;
         case 'updateOpacity':
           this.updateOpacity(message.opacity);
@@ -166,11 +169,15 @@ class PixelArtOverlay {
         case 'removeOverlay':
           this.removeOverlay();
           break;
+        case 'detectPixelSize':
+          const detectedSize = this.detectSitePixelSize();
+          sendResponse({ pixelSize: detectedSize });
+          return true; // Keep message channel open for async response
       }
     });
   }
 
-  setImage(imageData, opacity, scale, pixelSize = 0, showGrid = false, originalImageData = null) {
+  setImage(imageData, opacity, scale, pixelSize = 0, showGrid = false, originalImageData = null, customPaletteEnabled = false, customPalette = '') {
     console.log('Setting image with data:', imageData.substring(0, 50) + '...');
     this.overlayImage.src = imageData;
     this.currentState.imageData = imageData;
@@ -180,6 +187,8 @@ class PixelArtOverlay {
     this.currentState.pixelSize = pixelSize;
     this.currentState.pixelizeEnabled = pixelSize > 0;
     this.currentState.gridEnabled = showGrid;
+    this.currentState.customPaletteEnabled = customPaletteEnabled;
+    this.currentState.customPalette = customPalette;
     this.currentState.hasImage = true;
     this.currentState.visible = true;
     
@@ -272,6 +281,7 @@ class PixelArtOverlay {
     this.overlayImage.style.transform = `scale(${this.currentState.scale})`;
     this.overlayImage.style.transformOrigin = 'top left';
   }
+  
 
   showOverlay() {
     if (!this.currentState.hasImage) return;
@@ -310,7 +320,9 @@ class PixelArtOverlay {
       hasImage: false,
       pixelSize: 16,
       pixelizeEnabled: false,
-      gridEnabled: false
+      gridEnabled: false,
+      customPaletteEnabled: false,
+      customPalette: ''
     };
     this.saveState();
   }
@@ -341,6 +353,175 @@ class PixelArtOverlay {
         }
       }
     });
+  }
+
+  detectSitePixelSize() {
+    console.log('Detecting pixel size for site:', window.location.hostname);
+    
+    // Known site detection
+    const knownSites = {
+      'wplace.tk': 1,
+      'wplace.space': 1,
+      'wplace.org': 1,
+      'ourworldofpixels.com': 16,
+      'pixelplace.io': 1,
+      'pixelcanvas.io': 1,
+      'pxls.space': 1,
+      'reddit.com': 1, // r/place
+      'www.reddit.com': 1,
+      'place.reddit.com': 1,
+      'placenl.nl': 1,
+      'pixels.pythondiscord.com': 1
+    };
+    
+    const hostname = window.location.hostname.toLowerCase();
+    for (const [site, pixelSize] of Object.entries(knownSites)) {
+      if (hostname.includes(site)) {
+        console.log(`Detected known site ${site} with pixel size ${pixelSize}`);
+        return pixelSize;
+      }
+    }
+    
+    // Canvas-based detection
+    const canvasPixelSize = this.detectCanvasPixelSize();
+    if (canvasPixelSize) {
+      console.log(`Detected canvas pixel size: ${canvasPixelSize}`);
+      return canvasPixelSize;
+    }
+    
+    // CSS Grid detection
+    const gridPixelSize = this.detectCSSGridSize();
+    if (gridPixelSize) {
+      console.log(`Detected CSS grid pixel size: ${gridPixelSize}`);
+      return gridPixelSize;
+    }
+    
+    // DOM element pattern detection
+    const domPixelSize = this.detectDOMPixelPattern();
+    if (domPixelSize) {
+      console.log(`Detected DOM pixel pattern size: ${domPixelSize}`);
+      return domPixelSize;
+    }
+    
+    console.log('Could not detect pixel size automatically');
+    return null;
+  }
+
+  detectCanvasPixelSize() {
+    const canvases = document.querySelectorAll('canvas');
+    
+    for (const canvas of canvases) {
+      try {
+        if (canvas.width > 100 && canvas.height > 100) {
+          const ctx = canvas.getContext('2d');
+          if (!ctx) continue;
+          
+          // Sample a small area to detect pixel patterns
+          const imageData = ctx.getImageData(0, 0, Math.min(50, canvas.width), Math.min(50, canvas.height));
+          const data = imageData.data;
+          
+          // Look for repeating color patterns that indicate pixels
+          const pixelSize = this.analyzePixelPattern(data, imageData.width, imageData.height);
+          if (pixelSize) return pixelSize;
+        }
+      } catch (e) {
+        // Canvas might be tainted or inaccessible
+        continue;
+      }
+    }
+    
+    return null;
+  }
+  
+  detectCSSGridSize() {
+    // Look for CSS grid containers that might represent pixels
+    const gridElements = document.querySelectorAll('[style*="grid"], .grid, .pixel-grid, .canvas-grid');
+    
+    for (const element of gridElements) {
+      const computedStyle = window.getComputedStyle(element);
+      const gridTemplateColumns = computedStyle.gridTemplateColumns;
+      
+      if (gridTemplateColumns && gridTemplateColumns !== 'none') {
+        // Try to extract pixel size from grid template
+        const match = gridTemplateColumns.match(/repeat\(\d+,\s*(\d+)px\)/);
+        if (match) {
+          return parseInt(match[1]);
+        }
+      }
+    }
+    
+    return null;
+  }
+  
+  detectDOMPixelPattern() {
+    // Look for common pixel art game patterns
+    const pixelSelectors = [
+      '.pixel', '.tile', '.cell', '.square', 
+      '[class*="pixel"]', '[class*="tile"]', '[class*="cell"]',
+      '[data-x][data-y]', '[data-coord]'
+    ];
+    
+    for (const selector of pixelSelectors) {
+      const elements = document.querySelectorAll(selector);
+      if (elements.length > 100) { // Likely a pixel grid
+        const element = elements[0];
+        const rect = element.getBoundingClientRect();
+        const size = Math.min(rect.width, rect.height);
+        
+        if (size > 0 && size < 50) { // Reasonable pixel size
+          return Math.round(size);
+        }
+      }
+    }
+    
+    return null;
+  }
+  
+  analyzePixelPattern(data, width, height) {
+    // Simple pattern detection - look for repeating blocks of same color
+    const blockSizes = [1, 2, 4, 8, 16, 32];
+    
+    for (const blockSize of blockSizes) {
+      if (blockSize >= width || blockSize >= height) continue;
+      
+      let matches = 0;
+      let total = 0;
+      
+      // Check if colors repeat in blockSize x blockSize patterns
+      for (let y = 0; y < height - blockSize; y += blockSize) {
+        for (let x = 0; x < width - blockSize; x += blockSize) {
+          total++;
+          
+          // Get the color of the top-left pixel of this block
+          const baseIndex = (y * width + x) * 4;
+          const baseR = data[baseIndex];
+          const baseG = data[baseIndex + 1];
+          const baseB = data[baseIndex + 2];
+          
+          // Check if all pixels in this block are the same color
+          let blockMatches = true;
+          for (let by = 0; by < blockSize && blockMatches; by++) {
+            for (let bx = 0; bx < blockSize && blockMatches; bx++) {
+              const index = ((y + by) * width + (x + bx)) * 4;
+              if (Math.abs(data[index] - baseR) > 10 || 
+                  Math.abs(data[index + 1] - baseG) > 10 || 
+                  Math.abs(data[index + 2] - baseB) > 10) {
+                blockMatches = false;
+              }
+            }
+          }
+          
+          if (blockMatches) matches++;
+        }
+      }
+      
+      // If more than 30% of blocks are uniform, this might be the pixel size
+      if (total > 0 && (matches / total) > 0.3) {
+        return blockSize;
+      }
+    }
+    
+    return null;
   }
 }
 

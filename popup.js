@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', function() {
   const pixelSizeValue = document.getElementById('pixelSizeValue');
   const pixelizeToggle = document.getElementById('pixelizeToggle');
   const gridToggle = document.getElementById('gridToggle');
+  const customPaletteToggle = document.getElementById('customPaletteToggle');
+  const paletteSection = document.getElementById('paletteSection');
+  const colorPaletteInput = document.getElementById('colorPaletteInput');
+  const loadWplaceColorsBtn = document.getElementById('loadWplaceColors');
+  const loadRplaceColorsBtn = document.getElementById('loadRplaceColors');
+  const clearPaletteBtn = document.getElementById('clearPalette');
+  const autoMatchPixelSizeBtn = document.getElementById('autoMatchPixelSize');
   const toggleButton = document.getElementById('toggleOverlay');
   const removeButton = document.getElementById('removeOverlay');
   const shareButton = document.getElementById('shareConfig');
@@ -61,6 +68,21 @@ document.addEventListener('DOMContentLoaded', function() {
   // Handle grid toggle
   gridToggle.addEventListener('change', function() {
     updateGridVisibility();
+  });
+
+  // Handle custom palette toggle
+  customPaletteToggle.addEventListener('change', function() {
+    paletteSection.style.display = this.checked ? 'block' : 'none';
+    if (hasImage && pixelizeToggle.checked) {
+      updateImageWithPixelization();
+    }
+  });
+
+  // Handle palette input changes
+  colorPaletteInput.addEventListener('input', function() {
+    if (hasImage && pixelizeToggle.checked && customPaletteToggle.checked) {
+      updateImageWithPixelization();
+    }
   });
 
   // Handle image upload
@@ -120,6 +142,8 @@ document.addEventListener('DOMContentLoaded', function() {
       pixelSize: parseInt(pixelSizeSlider.value),
       pixelizeEnabled: pixelizeToggle.checked,
       gridEnabled: gridToggle.checked,
+      customPaletteEnabled: customPaletteToggle.checked,
+      customPalette: colorPaletteInput.value,
       imageData: originalImageData
     };
     
@@ -167,6 +191,9 @@ document.addEventListener('DOMContentLoaded', function() {
       pixelSizeValue.textContent = (config.pixelSize || 16) + 'px';
       pixelizeToggle.checked = config.pixelizeEnabled || false;
       gridToggle.checked = config.gridEnabled || false;
+      customPaletteToggle.checked = config.customPaletteEnabled || false;
+      colorPaletteInput.value = config.customPalette || '';
+      paletteSection.style.display = config.customPaletteEnabled ? 'block' : 'none';
       
       // Enable buttons
       toggleButton.disabled = false;
@@ -184,8 +211,131 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
+  // Predefined color palettes
+  const PREDEFINED_PALETTES = {
+    wplace: [
+      '#000000', '#3c3c3c', '#787878', '#d2d2d2', '#ffffff', '#600018', '#ed1c24', '#ff7f27', 
+      '#f6aa09', '#f9dd3b', '#fffabc', '#0eb968', '#13e67b', '#87ff5e', '#0c816e', '#10aea6', 
+      '#13e1be', '#28509e', '#4093e4', '#60f7f2', '#6b50f6', '#99b1fb', '#780c99', '#aa38b9', 
+      '#e09ff9', '#cb007a', '#ec1f80', '#f38da9', '#684634', '#95682a', '#f8b277'
+    ],
+    rplace: [
+      '#000000', '#00756F', '#009EAA', '#00A368', '#00CC78', '#2450A4', '#3690EA', '#51E9F4',
+      '#6A5CFF', '#7EED56', '#94B3FF', '#B44AC0', '#BE0039', '#D4E4BC', '#DE107F', '#FF3881',
+      '#FF4500', '#FF99AA', '#FFA800', '#FFFF00', '#FFB470', '#CD6155', '#A0522D', '#898D90',
+      '#9C9C9C', '#D4D7D9', '#FFFFFF', '#6D001A', '#BF4F36', '#FFC0CB', '#FF69B4', '#00CED1'
+    ]
+  };
+
+  // Load palette buttons
+  loadWplaceColorsBtn.addEventListener('click', function() {
+    colorPaletteInput.value = PREDEFINED_PALETTES.wplace.join(', ');
+    if (hasImage && pixelizeToggle.checked && customPaletteToggle.checked) {
+      updateImageWithPixelization();
+    }
+  });
+
+  loadRplaceColorsBtn.addEventListener('click', function() {
+    colorPaletteInput.value = PREDEFINED_PALETTES.rplace.join(', ');
+    if (hasImage && pixelizeToggle.checked && customPaletteToggle.checked) {
+      updateImageWithPixelization();
+    }
+  });
+
+  clearPaletteBtn.addEventListener('click', function() {
+    colorPaletteInput.value = '';
+    if (hasImage && pixelizeToggle.checked && customPaletteToggle.checked) {
+      updateImageWithPixelization();
+    }
+  });
+
+  // Auto-match pixel size button
+  autoMatchPixelSizeBtn.addEventListener('click', function() {
+    autoMatchPixelSizeBtn.textContent = 'Detecting...';
+    autoMatchPixelSizeBtn.disabled = true;
+    
+    // Send message to content script to detect pixel size
+    sendMessageToContent({
+      action: 'detectPixelSize'
+    }, function(response) {
+      if (response && response.pixelSize) {
+        // Update the pixel size slider
+        pixelSizeSlider.value = response.pixelSize;
+        pixelSizeValue.textContent = response.pixelSize + 'px';
+        
+        // Update the image if pixelization is enabled
+        if (hasImage && pixelizeToggle.checked) {
+          updateImageWithPixelization();
+        }
+        
+        autoMatchPixelSizeBtn.textContent = `Matched: ${response.pixelSize}px`;
+        autoMatchPixelSizeBtn.style.background = '#4CAF50';
+        
+        // Reset button after 2 seconds
+        setTimeout(() => {
+          autoMatchPixelSizeBtn.textContent = 'Auto-Match Site';
+          autoMatchPixelSizeBtn.style.background = '#9C27B0';
+          autoMatchPixelSizeBtn.disabled = false;
+        }, 2000);
+      } else {
+        autoMatchPixelSizeBtn.textContent = 'Not Detected';
+        autoMatchPixelSizeBtn.style.background = '#f44336';
+        
+        // Reset button after 2 seconds
+        setTimeout(() => {
+          autoMatchPixelSizeBtn.textContent = 'Auto-Match Site';
+          autoMatchPixelSizeBtn.style.background = '#9C27B0';
+          autoMatchPixelSizeBtn.disabled = false;
+        }, 2000);
+      }
+    });
+  });
+
+  // Convert hex to RGB
+  function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+
+  // Find closest color in palette
+  function findClosestColor(r, g, b, palette) {
+    let minDistance = Infinity;
+    let closestColor = palette[0];
+    
+    for (const hexColor of palette) {
+      const paletteColor = hexToRgb(hexColor);
+      const distance = Math.sqrt(
+        Math.pow(r - paletteColor.r, 2) +
+        Math.pow(g - paletteColor.g, 2) +
+        Math.pow(b - paletteColor.b, 2)
+      );
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestColor = hexColor;
+      }
+    }
+    
+    return hexToRgb(closestColor);
+  }
+
+  // Parse color palette from input
+  function parseColorPalette(paletteText) {
+    if (!paletteText.trim()) return [];
+    
+    return paletteText
+      .split(',')
+      .map(color => color.trim())
+      .filter(color => /^#?[0-9A-Fa-f]{6}$/.test(color))
+      .map(color => color.startsWith('#') ? color : '#' + color);
+  }
+
   // Pixelization function
-  function pixelateImage(imageData, pixelSize) {
+  function pixelateImage(imageData, pixelSize, useCustomPalette = false, customPalette = []) {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = function() {
@@ -203,6 +353,25 @@ document.addEventListener('DOMContentLoaded', function() {
         // Draw image at small size (this creates the pixelation effect)
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(img, 0, 0, pixelatedWidth, pixelatedHeight);
+        
+        // Apply color quantization if custom palette is enabled and has colors
+        if (useCustomPalette && customPalette.length > 0) {
+          const imageData = ctx.getImageData(0, 0, pixelatedWidth, pixelatedHeight);
+          const data = imageData.data;
+          
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            const closestColor = findClosestColor(r, g, b, customPalette);
+            data[i] = closestColor.r;
+            data[i + 1] = closestColor.g;
+            data[i + 2] = closestColor.b;
+          }
+          
+          ctx.putImageData(imageData, 0, 0);
+        }
         
         // Create final canvas at original size
         const finalCanvas = document.createElement('canvas');
@@ -226,7 +395,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (pixelizeToggle.checked) {
       const pixelSize = parseInt(pixelSizeSlider.value);
-      pixelateImage(originalImageData, pixelSize).then(pixelatedData => {
+      const useCustomPalette = customPaletteToggle.checked;
+      const customPalette = useCustomPalette ? parseColorPalette(colorPaletteInput.value) : [];
+      
+      pixelateImage(originalImageData, pixelSize, useCustomPalette, customPalette).then(pixelatedData => {
         sendMessageToContent({
           action: 'setImage',
           imageData: pixelatedData,
@@ -234,6 +406,8 @@ document.addEventListener('DOMContentLoaded', function() {
           scale: scaleSlider.value / 100,
           pixelSize: pixelSize,
           showGrid: gridToggle.checked,
+          customPaletteEnabled: useCustomPalette,
+          customPalette: colorPaletteInput.value,
           originalImageData: originalImageData
         });
       });
@@ -262,9 +436,14 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Send message to content script
-  function sendMessageToContent(message) {
+  function sendMessageToContent(message, callback) {
     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
       chrome.tabs.sendMessage(tabs[0].id, message, function(response) {
+        // Handle response if callback provided
+        if (callback && response) {
+          callback(response);
+        }
+        
         // If no response, the content script might not be loaded
         if (chrome.runtime.lastError) {
           // Try to inject the content script for sites not in manifest
@@ -278,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, function() {
               // Retry sending the message
               setTimeout(() => {
-                chrome.tabs.sendMessage(tabs[0].id, message);
+                chrome.tabs.sendMessage(tabs[0].id, message, callback);
               }, 100);
             });
           });
@@ -314,6 +493,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (state.gridEnabled) {
           gridToggle.checked = state.gridEnabled;
+        }
+        if (state.customPaletteEnabled) {
+          customPaletteToggle.checked = state.customPaletteEnabled;
+          paletteSection.style.display = 'block';
+        }
+        if (state.customPalette) {
+          colorPaletteInput.value = state.customPalette;
         }
       }
     }

@@ -104,6 +104,7 @@
       <input type="range" id="pixelSizeSlider" min="1" max="128" value="16">
       <span class="range-value" id="pixelSizeValue">16px</span>
     </div>
+    <button id="autoMatchPixelSize" style="font-size: 11px; padding: 5px 8px; margin-top: 5px; background: #9C27B0;">Auto-Match Site</button>
   </div>
 
   <div class="section">
@@ -115,6 +116,23 @@
       <input type="checkbox" id="gridToggle" style="margin-right: 8px; width: auto;">
       Show Grid
     </label>
+    <label style="display: flex; align-items: center; margin-bottom: 10px;">
+      <input type="checkbox" id="customPaletteToggle" style="margin-right: 8px; width: auto;">
+      Use Custom Color Palette
+    </label>
+    <div id="paletteSection" style="display: none; margin-bottom: 10px;">
+      <label style="font-size: 12px; margin-bottom: 5px;">Color Palette (hex codes separated by commas):</label>
+      <textarea 
+        id="colorPaletteInput" 
+        placeholder="Enter hex codes: #000000, #ffffff, #ff0000..."
+        style="width: 100%; height: 60px; font-size: 11px; resize: vertical; margin-bottom: 5px; padding: 5px; border: 1px solid #ccc; border-radius: 3px;"
+      ></textarea>
+      <div style="display: flex; gap: 5px;">
+        <button id="loadWplaceColors" style="font-size: 11px; padding: 5px 8px; flex: 1;">Load wplace</button>
+        <button id="loadRplaceColors" style="font-size: 11px; padding: 5px 8px; flex: 1;">Load r/place</button>
+        <button id="clearPalette" style="font-size: 11px; padding: 5px 8px; flex: 1;">Clear</button>
+      </div>
+    </div>
   </div>
 
   <div class="section">
