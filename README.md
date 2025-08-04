@@ -2,21 +2,34 @@
 
 A browser extension that helps you create pixel art on websites like r/place by overlaying reference images with adjustable opacity and positioning.
 
-## Features
-
-- Upload reference images through popup interface
-- Adjustable opacity (0-100%) for overlay visibility
-- Scalable overlay (10-200%) to match target canvas
-- Drag-and-drop positioning with visual handle
-- Persistent state across page reloads
-- Works on any website with canvas elements
-
 ## Installation
 
+### Chrome Web Store (Recommended)
+Install directly from the Chrome Web Store: [Plastic Extension](https://chromewebstore.google.com/detail/plastic/jmgohdfjidehbaggidpjikmccilopgpk)
+
+### Manual Installation
 1. Open Chrome/Edge and navigate to `chrome://extensions/`
 2. Enable "Developer mode" in the top right
 3. Click "Load unpacked" and select this extension folder
 4. The Plastic icon will appear in your extensions toolbar
+
+## Features
+
+### Core Functionality
+- 🖼️ **Image Upload & Display**: Upload reference images through intuitive popup interface
+- 🎛️ **Dual Drag Handles**: Precision positioning with both corner and edge drag controls
+- 👁️ **Adjustable Opacity**: Fine-tune transparency (0-100%) for perfect overlay visibility
+- 📏 **Scalable Overlay**: Resize from 10-200% to match any pixel grid size
+- 🎨 **Customizable Color Palettes**: Built-in color palette support for consistent pixel art creation
+- 🔍 **Auto-Pixel Detection**: Intelligent pixel grid detection for precise alignment
+
+### Advanced Features
+- 💾 **Persistent State**: All settings automatically saved across page reloads and sessions
+- 🎯 **Precision Input Controls**: Numerical input fields for exact positioning and scaling
+- 👀 **Quick Show/Hide Toggle**: Instantly toggle overlay visibility while maintaining position
+- 🌐 **Universal Compatibility**: Works on any website with canvas elements or pixel art interfaces
+- 🔒 **Privacy-First**: All image processing happens locally - no data transmission
+
 
 ## Usage
 
@@ -29,23 +42,62 @@ A browser extension that helps you create pixel art on websites like r/place by 
 7. Use "Hide Overlay" to temporarily hide while placing pixels
 8. Use "Remove Overlay" to clear the current image
 
-## Controls
+## Interface Controls
 
-- **Opacity Slider**: Controls transparency of overlay (0% = invisible, 100% = opaque)
-- **Scale Slider**: Adjusts size of overlay image (50% = half size, 200% = double size)
-- **Show/Hide Toggle**: Quickly show or hide overlay without losing position
-- **Remove Button**: Clears overlay and uploaded image
-- **Drag Handle**: Dark bar above overlay for repositioning
+### Popup Controls
+- **📁 File Upload**: Choose and upload reference images (supports all standard formats)
+- **🎛️ Opacity Slider**: Fine-tune transparency (0% = invisible, 100% = opaque) 
+- **📏 Scale Slider**: Resize overlay (10% = tiny, 200% = double size)
+- **🎯 Precision Inputs**: Numerical fields for exact opacity and scale values
+- **👁️ Show/Hide Toggle**: Instantly toggle overlay visibility without losing position
+- **🗑️ Remove Button**: Clear current overlay and uploaded image
+- **🎨 Color Palette**: Access customizable color palettes for pixel art creation
 
-## Tips
+### Overlay Controls
+- **🎛️ Dual Drag Handles**: Multiple drag points for precise positioning
+- **📍 Position Persistence**: Overlay remembers exact placement across sessions
+- **🔍 Auto-Alignment**: Smart pixel grid detection for perfect positioning
 
-- Use 30-70% opacity for best visibility balance
-- Scale the image to match the pixel grid size
-- Position carefully before starting pixel placement
-- Hide overlay when selecting colors or placing pixels for better visibility
+## Pro Tips
 
-## Browser Compatibility
+### Optimal Settings
+- **🎯 Opacity Sweet Spot**: Use 30-70% opacity for the perfect visibility balance
+- **📏 Grid Matching**: Scale your image to align perfectly with the target pixel grid
+- **🎨 Color Workflow**: Use built-in color palettes to maintain consistent pixel art colors
+- **🔍 Precision Mode**: Use numerical inputs for exact positioning when pixel-perfect accuracy is needed
 
-- Chrome 88+
-- Edge 88+
-- Other Chromium-based browsers
+### Best Practices  
+- **📍 Position First**: Carefully position overlay before starting pixel placement
+- **👁️ Hide When Needed**: Toggle overlay visibility when selecting colors or placing pixels
+- **💾 Save Progress**: Take advantage of automatic state persistence across sessions
+- **🎛️ Use Dual Handles**: Experiment with different drag handles for optimal positioning control
+
+## Technical Specifications
+
+### Browser Compatibility
+- **Chrome 88+**: Full feature support
+- **Edge 88+**: Full feature support  
+- **Other Chromium-based browsers**: Compatible with Manifest V3 support
+
+### Architecture
+- **Manifest V3**: Latest extension standard for enhanced security
+- **Programmatic Injection**: Dynamic script loading for optimal performance
+- **Local Storage**: Client-side data persistence with no external dependencies
+- **Cross-Site Compatible**: Works on any website through universal injection
+
+### Security & Privacy
+- **🔒 Local Processing**: All image processing happens on your device
+- **🛡️ Minimal Permissions**: Only requests necessary permissions (activeTab, storage)
+- **🔐 No Data Transmission**: Images and settings never leave your browser
+- **✅ Secure Architecture**: Built following modern extension security best practices
+
+## Support & Feedback
+
+Found a bug or have a feature request? We'd love to hear from you!
+- **Chrome Web Store**: Leave a review and rating
+- **Issues**: Report bugs or request features through the extension popup
+- **Community**: Share your pixel art creations and tips with other users
+
+---
+
+**Made with ❤️ for the pixel art community**
