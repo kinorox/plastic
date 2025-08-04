@@ -2,6 +2,11 @@
 
 A browser extension that helps you create pixel art on websites like wplace.live by overlaying reference images with adjustable opacity and positioning.
 
+## 📥 Download Now
+**[⬇️ Install from Chrome Web Store](https://chromewebstore.google.com/detail/plastic/jmgohdfjidehbaggidpjikmccilopgpk)**
+
+**Para usuários brasileiros**: Clique no link acima para instalar a extensão Plastic direto da Chrome Web Store. A extensão funciona perfeitamente no Chrome e Edge!
+
 ![Plastic Extension in Action](assets/screenshot-1.jpg)
 
 ## Installation
