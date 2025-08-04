@@ -2,6 +2,8 @@
 
 A browser extension that helps you create pixel art on websites like wplace.live by overlaying reference images with adjustable opacity and positioning.
 
+![Plastic Extension in Action](assets/screenshot-1.jpg)
+
 ## Installation
 
 ### Chrome Web Store (Recommended)
