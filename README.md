@@ -1,6 +1,6 @@
 # Plastic Browser Extension
 
-A browser extension that helps you create pixel art on websites like r/place by overlaying reference images with adjustable opacity and positioning.
+A browser extension that helps you create pixel art on websites like wplace.live by overlaying reference images with adjustable opacity and positioning.
 
 ## Installation
 
@@ -27,13 +27,13 @@ Install directly from the Chrome Web Store: [Plastic Extension](https://chromewe
 - 💾 **Persistent State**: All settings automatically saved across page reloads and sessions
 - 🎯 **Precision Input Controls**: Numerical input fields for exact positioning and scaling
 - 👀 **Quick Show/Hide Toggle**: Instantly toggle overlay visibility while maintaining position
-- 🌐 **Universal Compatibility**: Works on any website with canvas elements or pixel art interfaces
+- 🌐 **Universal Compatibility**: Optimized for wplace.live and works on any website with canvas elements or pixel art interfaces
 - 🔒 **Privacy-First**: All image processing happens locally - no data transmission
 
 
 ## Usage
 
-1. Navigate to a pixel art website (like r/place)
+1. Navigate to a pixel art website (like wplace.live)
 2. Click the Plastic extension icon
 3. Upload a reference image using "Choose File"
 4. Adjust opacity and scale as needed
